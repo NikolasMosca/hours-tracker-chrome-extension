@@ -12,6 +12,7 @@
 		<script src="./js/jquery.min.js"></script>
 		<script src="./js/moment.min.js"></script>
 		<script src="./js/papaparse.min.js"></script>
+		<script src="./js/chart.min.js"></script>
 		<script src="./js/main.js"></script>
 	</head>
 	<body>
@@ -64,6 +65,11 @@
 				</div>
 
 				<div class="col s12">
+					<ul class="pagination">
+						<li id="prev-year" class="waves-effect"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+						<li class="active"><a id="current-year" href="#!"></a></li>
+						<li id="next-year" class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+					</ul>
 					<ul class="collection with-header" id="home-hours-list"></ul>
 				</div>
 			</div>
@@ -106,7 +112,6 @@
 					</select>
 				</div>	
 				<div class="col s12" id="statistics-list">
-					<ul class="collection with-header" id="statistics-list"></ul>
 				</div>
 			</div>
 			<!-- Statistics View -->
@@ -157,6 +162,18 @@
 			</div>
 		</div>
 		<!-- Loading Overlay -->
+
+		<!-- Modal remember backup -->
+		<div id="modal-remember-backup" class="modal">
+			<div class="modal-content">
+			  	<h4>Download Backup</h4>
+			  	<p>Thanks for using this extension! For keep your data safe and avoid any type of loss data, please download this backup. In case of data loss you can use this file for importin again your hours. Have a nice day!</p>
+			</div>
+			<div class="modal-footer">
+			 	<a id="download-backup" href="#!" class="modal-close waves-effect waves-green btn-flat">Download the backup</a>
+			</div>
+		</div>
+		<!-- Modal remember backup -->
 
 		<script src="./js/materialize.min.js"></script>
 		<script src="./js/pages/home.js"></script>

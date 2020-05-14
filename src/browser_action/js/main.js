@@ -1,6 +1,6 @@
 function manageTheme() {
     //Check theme variable 
-    chrome.storage.local.get(['theme'], function(result) {        
+    GetStorage('theme', function(result) {    
         //Set body with selected theme
         if(!result.theme) {
             result.theme = 'light';
@@ -51,10 +51,8 @@ function managePages() {
         $('#import-csv-container').removeClass('hide');
     });
 
-    $('#go-to-statistics').click();
-
     //Export hours in CSV
-    $('#export-csv').click(function() {
+    $('#export-csv, #download-backup').click(function() {
         $('#loading-overlay').fadeIn();
         var rows = [ ["Date", "Project", "Hours", "Description"] ];
         var projects = {};
@@ -87,12 +85,14 @@ function managePages() {
                 var encodedUri = encodeURI(csvContent);
                 var link = document.createElement("a");
                 link.setAttribute("href", encodedUri);
-                link.setAttribute("download", "my_data.csv");
+                link.setAttribute("download", "hours-tracker-backup-"+ moment().format('YYYY-MM-DD') +".csv");
                 document.body.appendChild(link); 
                 link.click();
 
-                $('#loading-overlay').fadeOut();
-                M.toast({ html: 'Export finished! You can find the file in the downloads section' });
+                SaveStorage('lastBackup', Date.now(), function() {
+                    $('#loading-overlay').fadeOut();
+                    M.toast({ html: 'Export finished! You can find the file in the downloads section' });
+                })
             })
         })
     });
@@ -112,6 +112,7 @@ $(document).ready(function() {
     M.AutoInit();
 
     $('.sidenav').sidenav();
+    $('.modal').modal();
     $('.datepicker').datepicker({
         format: 'yyyy-mm-dd',
         defaultDate: new Date(),
@@ -124,4 +125,17 @@ $(document).ready(function() {
 
     //Manage change view
     managePages();
+
+    //Check time and display backup modal if is necessary 
+    GetStorage('lastBackup', function(result) {
+        var periodInMs = 15 * 24 * 60 * 60 * 1000;
+        GetStorage('hours', function(r) {
+            //If there aren't any hours not ask to do backup
+            if(!r.hours || r.hours.length === 0) {
+                SaveStorage('lastBackup', Date.now());
+            } else if(!result.lastBackup || (Date.now() - result.lastBackup) > periodInMs) {
+                $('#modal-remember-backup').modal('open')
+            }
+        });   
+    });
 })

@@ -9,6 +9,8 @@ var homeComponent = {
     hours: [],
     projects: [],
     dataList: {},
+    year: moment().format('YYYY'),
+    years: [],
 
     //Fields
     fields: {
@@ -42,33 +44,30 @@ var homeComponent = {
     },
 
     generateList: function() {
-        var days = [
-            'Sunday', 'Monday', 'Tuesday', 'Wednesday', 
-            'Thursday', 'Friday', 'Saturday'
-        ];
-        var months = [
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        ];
         var objProjects = {};
         for(var i = 0; i < this.projects.length; i++) {
             objProjects[ this.projects[i].id ] = this.projects[i].name;
         }
 
         var objHours = {};
+        var years = [];
         for(var i = 0; i < this.hours.length; i++) {
             var h = { ...this.hours[i] };
-            if(!objHours[ h.day ]) {
-                objHours[ h.day ] = [];
+            var year = moment(h.day, 'YYYY-MM-DD').format('YYYY');
+
+            if(!years.includes(year)) years.push(year);
+            if(year == this.year) {
+                if(!objHours[ h.day ]) {
+                    objHours[ h.day ] = [];
+                }
+                h.dayName = moment(h.day, 'YYYY-MM-DD').format('dddd, DD MMM YYYY');
+                h.project = objProjects[ h.projectId ];
+                objHours[ h.day ].push(h);
             }
-            var d = new Date(h.day);
-            h.dayName = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`
-            h.project = objProjects[ h.projectId ];
-            objHours[ h.day ].push(h);
         }
         
         this.dataList = objHours;
-
+        this.years = years;
         this.renderList();
     },
 
@@ -153,10 +152,7 @@ var homeComponent = {
         var dates = Object.keys(this.dataList);
         dates.sort(function(a, b){ return new Date(b).getTime() - new Date(a).getTime() });
 
-        var maxList = 30;
-        if(dates.length < maxList) maxList = dates.length;
-        
-        for(var i = 0; i < maxList; i++) {
+        for(var i = 0; i < dates.length; i++) {
             var date = dates[i];
             var item = this.dataList[date];
 
@@ -208,7 +204,7 @@ var homeComponent = {
     init: function() {
         //Fill options in hours field
         var listHours = [];
-        for(var hours = 0.5; hours <= 12; hours += 0.5) {
+        for(var hours = 0.5; hours <= 12; hours += 0.25) {
             listHours.push({
                 value: hours,
                 label: hours + ' Hours'
@@ -223,6 +219,7 @@ var homeComponent = {
             'Choose how much hours you have worked'
         );
 
+        $('#current-year').text(moment().format('YYYY'));
         this.getDailyHours();   
 
         if(!this.events) {
@@ -251,6 +248,26 @@ var homeComponent = {
         });
         $('#home-add-hours').click(function() {
             that.addDailyHours();
+        });
+        $('#prev-year').click(function() {
+            var year = parseInt($('#current-year').text()) - 1;
+            if(that.years.includes(year.toString())) {
+                that.year = year;
+                that.getDailyHours();      
+                $('#current-year').text(year);
+            } else {
+                M.toast({ html: 'No elements found for year ' + year, classes: 'toastrError' });
+            }
+        });
+        $('#next-year').click(function() {
+            var year = parseInt($('#current-year').text()) + 1;
+            if(that.years.includes(year.toString())) {
+                that.year = year;
+                that.getDailyHours();   
+                $('#current-year').text(year);
+            } else {
+                M.toast({ html: 'No elements found for year ' + year, classes: 'toastrError' });
+            }
         });
         $(document).on('click', '.home-remove-hours', function() {
             that.removeHours($(this).data('id'));
