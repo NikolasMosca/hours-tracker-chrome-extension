@@ -68,7 +68,7 @@ Simple button that permits to choose to have a light or dark interface, I hope y
 # Some idea to develop in the future 
 Until I have the time I would like to improve this chrome extension.
 
-I like to : 
+I would like to : 
 - add more filters to statistics, like show past years or make more useful graphs 
 - implements some partial exportation 
 - backup online with google drive or dropbox 
