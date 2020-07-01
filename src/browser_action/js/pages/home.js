@@ -226,6 +226,15 @@ var homeComponent = {
             this.events = true;
             this.manageEvents();
         }
+
+        setTimeout(function() {
+            $('.datepicker').datepicker({
+                format: 'yyyy-mm-dd',
+                defaultDate: new Date(),
+                setDefaultDate: true,
+                firstDay: 1
+            });
+        })
     },
 
     manageEvents: function() {
